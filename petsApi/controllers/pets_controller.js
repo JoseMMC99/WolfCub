@@ -39,10 +39,11 @@ export async function getOnePet(req, res) {
 }
 
 export async function createPet(req, res) {
-  const { name, age, gender, pet_type } = req.body;
+  const { name, owner, age, gender, pet_type } = req.body;
   try {
     const newPet = await models.Pet.create({
       name,
+      owner,
       age,
       gender,
       pet_type,
@@ -63,7 +64,7 @@ export async function createPet(req, res) {
 
 export async function updatePet(req, res) {
   const { id } = req.params;
-  const { name, age, gender, pet_type } = req.body;
+  const { name, owner, age, gender, pet_type } = req.body;
   try {
     const pet = await models.Pet.findOne({
       where: {
@@ -80,6 +81,7 @@ export async function updatePet(req, res) {
     const updatedPet = await models.Pet.update(
       {
         name: name,
+        owner: owner,
         age: age,
         gender: gender,
         pet_type: pet_type,
