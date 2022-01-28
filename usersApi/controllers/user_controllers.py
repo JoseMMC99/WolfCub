@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from models.user_model import User, UserSchema
 from utils.db import db
+import urllib.request, json
 
 users = Blueprint('users', __name__)
 
@@ -9,7 +10,6 @@ def get_users():
   all_users = User.query.all()
   user_schema = UserSchema(many=True)
   all_users = user_schema.dump(all_users)
-  print(all_users)
 
   return jsonify(all_users)
 
@@ -17,11 +17,19 @@ def get_users():
 def get_user(document):
   user_exist = User.query.get(document)
   if(not user_exist):
-    return "That user does not exist"
-  
+    return "That user does not exist"  
+
   user_schema = UserSchema()
   user = user_schema.dump(user_exist)
-  return jsonify(user)
+
+  # Getting the pet
+  url = f'http://localhost:8008/api/pets/owner/{document}'
+  response = urllib.request.urlopen(url)
+  data = response.read()
+  petData = json.loads(data)
+  json_response = {"owner": user, "pet": petData['pet']}
+
+  return json_response
 
 @users.route("/users", methods=['POST'])
 def new_user():

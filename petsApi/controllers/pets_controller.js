@@ -1,4 +1,5 @@
 import models from "../models/index.js";
+import axios from "axios";
 
 export async function getPets(req, res) {
   try {
@@ -26,8 +27,12 @@ export async function getOnePet(req, res) {
     });
 
     if (pet) {
+      const ownerData = await axios.get(
+        `http://localhost:3000/users/${pet.owner}`
+      );
       res.status(200).json({
         pet: pet,
+        owner: ownerData.data,
       });
     }
   } catch (error) {
@@ -138,6 +143,66 @@ export async function deletePet(req, res) {
   } catch (error) {
     res.status(500).json({
       message: "There was an error deleting the pet",
+      error: error.message,
+    });
+  }
+}
+
+export async function deletePetByOwner(req, res) {
+  const { owner_id } = req.params;
+
+  try {
+    const pet = await models.Pet.findAll({
+      where: {
+        owner: owner_id,
+      },
+    });
+
+    if (!pet) {
+      return res.status(404).json({
+        message: "This owner didn't had any pet",
+      });
+    }
+
+    const deletePetCount = await models.Pet.destroy({
+      where: {
+        owner: owner_id,
+      },
+    });
+
+    res.status(200).json({
+      message: `${deletePetCount} Pet data successfully deleted`,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Something went wrong deleting the pet",
+      error: error.message,
+    });
+  }
+}
+
+export async function getPetByOwner(req, res) {
+  const { owner_id } = req.params;
+
+  try {
+    const pet = await models.Pet.findAll({
+      where: {
+        owner: owner_id,
+      },
+    });
+
+    if (!pet) {
+      return res.status(200).json({
+        pet: "This person doesn't have any pet",
+      });
+    }
+
+    res.status(200).json({
+      pet: pet,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Something went wrong obtaining the pet",
       error: error.message,
     });
   }
