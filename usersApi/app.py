@@ -10,7 +10,7 @@ import os
 load_dotenv()
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://{os.getenv("USER")}@{os.getenv("HOST")}/{os.getenv("DB")}';
+app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://{os.getenv("USER")}:{os.getenv("PASSWORD")}@{os.getenv("HOST")}/{os.getenv("DB")}';
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 SQLAlchemy(app)

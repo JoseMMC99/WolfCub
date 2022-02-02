@@ -1,0 +1,8 @@
+#Js Files
+**node_modules
+**config
+**.env
+
+#Python Files
+**dev_env
+**__pycache__
