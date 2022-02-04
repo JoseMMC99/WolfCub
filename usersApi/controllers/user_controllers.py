@@ -6,6 +6,7 @@ import urllib.request, json
 
 users = Blueprint('users', __name__)
 
+@cross_origin
 @users.route("/users")
 def get_users():
   all_users = User.query.all()
