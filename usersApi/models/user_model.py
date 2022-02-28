@@ -1,4 +1,6 @@
 from utils.db import db, ma
+from flask_login import UserMixin
+from app import bcrypt
 
 class User(db.Model):
   document_id = db.Column(db.Integer, primary_key=True)
@@ -21,6 +23,9 @@ class User(db.Model):
     self.gender = gender
     self.email = email
     self.password = password
+
+  def encrypt_password(password):
+    return bcrypt.generate_password_hash(password).decode('utf-8')
 
 class UserSchema(ma.Schema):
   class Meta:
