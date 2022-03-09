@@ -1,10 +1,12 @@
 from flask import Blueprint, request, jsonify
+from flask_cors import cross_origin
 from models.user_model import User, UserSchema
 from utils.db import db
 import urllib.request, json
 
 users = Blueprint('users', __name__)
 
+@cross_origin
 @users.route("/users")
 def get_users():
   all_users = User.query.all()
@@ -13,6 +15,7 @@ def get_users():
 
   return jsonify(all_users)
 
+@cross_origin
 @users.route("/users/<document>", methods=["GET"])
 def get_user(document):
   user_exist = User.query.get(document)
@@ -31,6 +34,7 @@ def get_user(document):
 
   return json_response
 
+@cross_origin
 @users.route("/users", methods=['POST'])
 def new_user():
   document_id = request.form["document_id"]
@@ -50,6 +54,7 @@ def new_user():
 
   return first_name
 
+@cross_origin
 @users.route("/users/update/<document>", methods=["PUT"])
 def update_user(document):
   user_exist = User.query.get(document)
@@ -73,6 +78,7 @@ def update_user(document):
 
   return jsonify(user)
 
+@cross_origin
 @users.route("/users/delete/<document>", methods=["DELETE"])
 def delete_user(document):
   user_exist = User.query.get(document)
