@@ -1,14 +1,26 @@
-from flask import Blueprint, request, jsonify
+from flask_login import login_required
+from flask import Blueprint, request, jsonify, make_response
 from flask_cors import cross_origin
 from models.user_model import User, UserSchema
 from utils.db import db
 import urllib.request, json
+from app import bcrypt
+from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
+from middlewares.authJWT import is_admin, check_belong
 
 users = Blueprint('users', __name__)
 
 @cross_origin
-@users.route("/users")
+@users.route("/api/users")
 def get_users():
+  token = request.headers['authorization']
+
+  if(not token):
+    return jsonify(msg='Not token provided')
+
+  if(not is_admin(token)):
+    return jsonify(msg='You cant do that!')
+
   all_users = User.query.all()
   user_schema = UserSchema(many=True)
   all_users = user_schema.dump(all_users)
@@ -16,8 +28,18 @@ def get_users():
   return jsonify(all_users)
 
 @cross_origin
-@users.route("/users/<document>", methods=["GET"])
+@users.route("/api/users/<document>", methods=["GET"])
 def get_user(document):
+  token = request.headers['authorization']
+
+  if(not token):
+    return jsonify(msg='Not token provided')
+
+  if(not is_admin(token)):
+
+    if(not check_belong(token, document)):
+      return jsonify(msg='You cant do that!')
+
   user_exist = User.query.get(document)
   if(not user_exist):
     return "That user does not exist"  
@@ -35,8 +57,8 @@ def get_user(document):
   return json_response
 
 @cross_origin
-@users.route("/users", methods=['POST'])
-def new_user():
+@users.route("/api/users", methods=['POST'])
+def new_user():  
   document_id = request.form["document_id"]
   first_name = request.form["first_name"]
   last_name = request.form["last_name"]
@@ -45,22 +67,34 @@ def new_user():
   phone = request.form["phone"]
   gender = request.form["gender"]
   email = request.form["email"]
-  password = request.form["password"]  
+  password = User.encrypt_password(request.form["password"])
 
   new_user = User(document_id, first_name, last_name, document_type, user_type, phone,gender, email, password)
 
   db.session.add(new_user)
   db.session.commit()
 
-  return first_name
+  token = create_access_token(user=new_user)
+
+  return jsonify(user=new_user,token=token)
 
 @cross_origin
-@users.route("/users/update/<document>", methods=["PUT"])
+@users.route("/api/users/update/<document>", methods=["PUT"])
 def update_user(document):
+  token = request.headers['authorization']
+
+  if(not token):
+    return jsonify(msg='Not token provided')
+
+  if(not is_admin(token)):
+
+    if(not check_belong(token, document)):
+      return jsonify(msg='You cant do that!')
+
   user_exist = User.query.get(document)
 
   if(not user_exist):
-    return "That user does not existe"
+    return "That user does not exist"
 
   user_exist.document_id = request.form["document_id"]
   user_exist.first_name = request.form["first_name"]
@@ -79,12 +113,43 @@ def update_user(document):
   return jsonify(user)
 
 @cross_origin
-@users.route("/users/delete/<document>", methods=["DELETE"])
+@users.route("/api/users/delete/<document>", methods=["DELETE"])
 def delete_user(document):
+  token = request.headers['authorization']
+
+  if(not token):
+    return jsonify(msg='Not token provided')
+
+  if(not is_admin(token)):
+
+    if(not check_belong(token, document)):
+      return jsonify(msg='You cant do that!')
+
   user_exist = User.query.get(document)
   if(not user_exist):
-    return "That User does not exist"
+    return jsonify(msg="That User does not exist")
 
   db.session.delete(user_exist)
   db.session.commit()
-  return f'User with document: {document} was removed'
+  return  jsonify(msg=f'User with document: {document} was removed')
+
+@cross_origin
+@users.route("/api/users/login", methods=["POST"])
+def login_user():
+  email = request.form["email"]
+  user_exist = User.query.filter_by(email=email).first()
+  if(not user_exist):
+    return  jsonify(msg='Theres not user with that email')
+
+  user_schema = UserSchema()
+  user = user_schema.dump(user_exist)
+
+  password = request.form["password"]
+
+  if(password != user['password']):
+    return  jsonify(msg='Incorrect password')
+
+  access_token = create_access_token(user);
+
+  return jsonify(token=access_token) 
+
