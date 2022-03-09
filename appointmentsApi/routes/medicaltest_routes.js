@@ -16,3 +16,5 @@ router.get("medicalTest/:id", isAdmin, getOneMedicalTest);
 router.post("medicalTest/create", isAdmin, createMedicalTest);
 router.put("medicalTest/update/:id", isAdmin, updateMedicalTest);
 router.delete("medicalTest/delete/:id", isAdmin, deleteMedicalTest);
+
+export default router;

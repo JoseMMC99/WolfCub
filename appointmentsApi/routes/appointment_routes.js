@@ -16,3 +16,5 @@ router.get("appointments/:id", belongsToUser, getOneAppointment);
 router.post("appointments/create", isAdmin, createAppointment);
 router.put("appointments/update/:id", isAdmin, updateAppointment);
 router.delete("appointments/delete/:id", isAdmin, deleteAppointment);
+
+export default router;
