@@ -1,8 +1,7 @@
 import jwt from "jsonwebtoken";
-import JWT from "../.env";
 
 export async function decodeToken(token) {
-  const user = jwt.decode(token, JWT);
+  const user = jwt.decode(token, process.env["JWT"]);
   return user;
 }
 
