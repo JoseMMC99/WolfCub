@@ -17,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
       pet_id: DataTypes.INTEGER,
       vet_id: DataTypes.INTEGER,
       appointment_date: DataTypes.DATE,
-      appointment_hour: DataTypes.DATE,
+      appointment_hour: DataTypes.STRING,
       appointment_reason: DataTypes.STRING,
       appointment_observ: DataTypes.STRING,
     },

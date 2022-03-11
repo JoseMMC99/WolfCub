@@ -11,5 +11,5 @@ app.use("/api", medicalRoutes);
 app.use("/api", appointmentRoutes);
 
 app.listen(8080, () => {
-  console.log("Server Listening on 8080");
+  console.log("Appointments Server Listening on 8080");
 });

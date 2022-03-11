@@ -27,8 +27,17 @@ export async function getOneMedicalTest(req, res) {
     });
 
     if (medicalTest) {
+      const petData = await axios.get(
+        `http://localhost:8008/${medicalTest.pet_id}`
+      );
+
+      const ownerData = await axios.get(
+        `http://localhost:3000/users/${petData.data.owner_id}`
+      );
       res.status(200).json({
         medicalTest: medicalTest,
+        pet: petData.data.pet,
+        owner: ownerData.data.owner,
       });
     }
   } catch (error) {

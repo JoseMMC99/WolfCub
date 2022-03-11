@@ -7,14 +7,12 @@ import {
   deleteAppointment,
 } from "../controllers/appointment_controller.js";
 
-import { isAdmin, belongsToUser } from "../middlewares/authJwt";
-
 const router = Router();
 
-router.get("/appointments", isAdmin, getAppointments);
-router.get("/appointments/:id", belongsToUser, getOneAppointment);
-router.post("/appointments/create", isAdmin, createAppointment);
-router.put("/appointments/update/:id", isAdmin, updateAppointment);
-router.delete("/appointments/delete/:id", isAdmin, deleteAppointment);
+router.get("/appointments", getAppointments);
+router.get("/appointments/:id", getOneAppointment);
+router.post("/appointments/create", createAppointment);
+router.put("/appointments/update/:id", updateAppointment);
+router.delete("/appointments/delete/:id", deleteAppointment);
 
 export default router;
