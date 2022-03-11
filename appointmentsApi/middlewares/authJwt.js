@@ -5,7 +5,7 @@ export async function decodeToken(token) {
   return user;
 }
 
-export async function isAdmin(req, res) {
+export async function isAdmin(req, res, next) {
   try {
     const token = req.headers["authorization"];
     if (!token) {
@@ -31,7 +31,7 @@ export async function isAdmin(req, res) {
   }
 }
 
-export async function belongsToUser(req, res) {
+export async function belongsToUser(req, res, next) {
   try {
     const token = req.headers["authorization"];
     if (!token) {
@@ -43,7 +43,7 @@ export async function belongsToUser(req, res) {
     const user = decodeToken(token);
 
     const owner_id = req.params;
-    if (user.document_id != owner_id) {
+    if (user.document_id != owner_id && user.type == 1) {
       return res.status(403).json({
         message: "You're not allowed to do that",
       });

@@ -21,7 +21,7 @@ module.exports = {
         type: Sequelize.DATE,
       },
       appointment_hour: {
-        type: Sequelize.DATE,
+        type: Sequelize.STRING,
       },
       appointment_reason: {
         type: Sequelize.STRING,

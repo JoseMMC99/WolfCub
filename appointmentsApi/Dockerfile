@@ -1,5 +1,5 @@
 FROM node:latest
-WORKDIR /pets-api
+WORKDIR /appointments-api
 COPY package.json .
 RUN npm install
 COPY . .

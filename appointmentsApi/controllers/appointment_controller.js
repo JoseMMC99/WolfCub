@@ -27,8 +27,23 @@ export async function getOneAppointment(req, res) {
     });
 
     if (appointment) {
+      const petData = await axios.get(
+        `http://localhost:8008/api/pets/${appointment.pet_id}`
+      );
+
+      const vetData = await axios.get(
+        `http://localhost:3000/api/users/${appointment.vet_id}`
+      );
+
+      const ownerData = await axios.get(
+        `http://localhost:3000/api/users/${appointment.owner_id}`
+      );
+
       res.status(200).json({
         appointment: appointment,
+        vet: vetData.data.owner,
+        owner: ownerData.data.owner,
+        pet: petData.data.pet,
       });
     }
   } catch (error) {
@@ -65,12 +80,6 @@ export async function createAppointment(req, res) {
 
     const now_date = new Date();
 
-    if (appointment_date < now_date || appointment_hour < now_date.getHours) {
-      return res.status(200).json({
-        message: "Not available time",
-      });
-    }
-
     const newAppointment = await models.Appointment.create({
       owner_id,
       pet_id,
@@ -82,7 +91,7 @@ export async function createAppointment(req, res) {
     });
 
     if (newAppointment) {
-      req.status(200).json({
+      res.status(200).json({
         appointment: newAppointment,
       });
     }

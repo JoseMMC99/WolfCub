@@ -28,11 +28,11 @@ export async function getOnePet(req, res) {
 
     if (pet) {
       const ownerData = await axios.get(
-        `http://localhost:3000/users/${pet.owner}`
+        `http://localhost:3000/api/users/${pet.owner}`
       );
       res.status(200).json({
         pet: pet,
-        owner: ownerData.data,
+        owner: ownerData.data.owner,
       });
     }
   } catch (error) {

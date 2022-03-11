@@ -1,0 +1,21 @@
+services:
+  appointments-api:
+    build:
+      context: ./appointmentsApi/
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+
+  pets-api:
+    build:
+      context: ./petsApi/
+      dockerfile: Dockerfile
+    ports:
+      - "8008:8008"
+
+  users-api:
+    build:
+      context: ./usersApi/
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"

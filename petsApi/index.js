@@ -8,6 +8,6 @@ app.use(json());
 
 app.use("/api", petRoutes);
 
-app.listen(3000, () => {
-  console.log("Server Listening on 8008");
+app.listen(8008, () => {
+  console.log("Pets Server Listening on 8008");
 });
