@@ -4,23 +4,13 @@ from flask_cors import cross_origin
 from models.user_model import User, UserSchema
 from utils.db import db
 import urllib.request, json
-from app import bcrypt
-from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
-from middlewares.authJWT import is_admin, check_belong
+from flask_jwt_extended import create_access_token
 
 users = Blueprint('users', __name__)
 
 @cross_origin
 @users.route("/api/users")
 def get_users():
-  token = request.headers['authorization']
-
-  if(not token):
-    return jsonify(msg='Not token provided')
-
-  if(not is_admin(token)):
-    return jsonify(msg='You cant do that!')
-
   all_users = User.query.all()
   user_schema = UserSchema(many=True)
   all_users = user_schema.dump(all_users)
@@ -30,15 +20,6 @@ def get_users():
 @cross_origin
 @users.route("/api/users/<document>", methods=["GET"])
 def get_user(document):
-  token = request.headers['authorization']
-
-  if(not token):
-    return jsonify(msg='Not token provided')
-
-  if(not is_admin(token)):
-
-    if(not check_belong(token, document)):
-      return jsonify(msg='You cant do that!')
 
   user_exist = User.query.get(document)
   if(not user_exist):
@@ -81,15 +62,6 @@ def new_user():
 @cross_origin
 @users.route("/api/users/update/<document>", methods=["PUT"])
 def update_user(document):
-  token = request.headers['authorization']
-
-  if(not token):
-    return jsonify(msg='Not token provided')
-
-  if(not is_admin(token)):
-
-    if(not check_belong(token, document)):
-      return jsonify(msg='You cant do that!')
 
   user_exist = User.query.get(document)
 
@@ -115,16 +87,6 @@ def update_user(document):
 @cross_origin
 @users.route("/api/users/delete/<document>", methods=["DELETE"])
 def delete_user(document):
-  token = request.headers['authorization']
-
-  if(not token):
-    return jsonify(msg='Not token provided')
-
-  if(not is_admin(token)):
-
-    if(not check_belong(token, document)):
-      return jsonify(msg='You cant do that!')
-
   user_exist = User.query.get(document)
   if(not user_exist):
     return jsonify(msg="That User does not exist")
